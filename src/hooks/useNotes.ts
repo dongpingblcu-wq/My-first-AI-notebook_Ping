@@ -14,7 +14,7 @@ export function useNotes() {
     if (loadedNotes.length > 0 && !activeNoteId) {
       setActiveNoteId(loadedNotes[0].id);
     }
-  }, []);
+  }, [activeNoteId]);
 
   const createNote = () => {
     const newNote: Note = {

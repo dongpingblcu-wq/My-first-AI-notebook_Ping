@@ -100,7 +100,7 @@ export function ProjectTaskList({ tasks, onTaskUpdate, onTaskDelete, onTaskAdd, 
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const _getStatusColor = (status: string) => {
     switch (status) {
       case 'todo': return 'bg-gray-100 text-gray-800';
       case 'in-progress': return 'bg-blue-100 text-blue-800';
@@ -110,7 +110,7 @@ export function ProjectTaskList({ tasks, onTaskUpdate, onTaskDelete, onTaskAdd, 
     }
   };
 
-  const getStatusText = (status: string) => {
+  const _getStatusText = (status: string) => {
     switch (status) {
       case 'todo': return '待办';
       case 'in-progress': return '进行中';

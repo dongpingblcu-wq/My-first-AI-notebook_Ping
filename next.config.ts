@@ -1,8 +1,5 @@
 const nextConfig = {
-  experimental: {
-    // 如果需要禁用Turbopack，可以移除整个experimental配置
-    // 或者使用正确的配置格式
-  }
+  // 移除实验性配置以确保Vercel部署兼容性
 }
 
 export default nextConfig;

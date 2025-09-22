@@ -5,15 +5,13 @@ import {
   Project, 
   ProjectTask, 
   ProjectMember, 
-  ProjectStats, 
   ProjectFilter, 
-  ProjectSortBy,
-  ProjectViewState 
+  ProjectSortBy
 } from '@/types/project';
 
 const PROJECT_STORAGE_KEY = 'ai-notebook-projects';
 const PROJECT_TASKS_STORAGE_KEY = 'ai-notebook-project-tasks';
-const PROJECT_MEMBERS_STORAGE_KEY = 'ai-notebook-project-members';
+const _PROJECT_MEMBERS_STORAGE_KEY = 'ai-notebook-project-members';
 
 // 模拟当前用户
 const CURRENT_USER: ProjectMember = {
@@ -215,7 +213,7 @@ export function useProjects() {
       totalHours: 0,
       completionRate: total > 0 ? Math.round((completed / total) * 100) : 0
     };
-  }, [projects]);
+  }, [projects, currentTime]);
 
   return {
     projects,

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Settings, Download, Copy, RefreshCw } from 'lucide-react';
+import { Send, Bot, User, Download, Copy, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -10,18 +10,12 @@ import { PromptTemplates } from './prompt-templates';
 import { useAIChat } from '@/hooks/useAIChat';
 import { cn } from '@/lib/utils';
 
-interface Message {
-  id: string;
-  content: string;
-  role: 'user' | 'assistant';
-  timestamp: Date;
-  model?: string;
-}
+
 
 export function AIChatInterface() {
   const [input, setInput] = useState('');
   const [selectedModel, setSelectedModel] = useState('deepseek/deepseek-chat-v3.1');
-  const [selectedPrompt, setSelectedPrompt] = useState('');
+
   const [isPromptSelectorOpen, setIsPromptSelectorOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -29,8 +23,7 @@ export function AIChatInterface() {
     messages,
     isLoading,
     sendMessage,
-    clearChat,
-    loadHistory
+    clearChat
   } = useAIChat(selectedModel);
 
   const scrollToBottom = () => {

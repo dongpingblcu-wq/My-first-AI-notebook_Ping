@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 export default function DebugPage() {
-  const [localStorageData, setLocalStorageData] = useState<Record<string, string> | Array<any> | null>(null);
+  const [localStorageData, setLocalStorageData] = useState<Record<string, string> | Array<unknown> | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {

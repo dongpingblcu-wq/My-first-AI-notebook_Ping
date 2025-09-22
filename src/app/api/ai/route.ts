@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
           if (!Array.isArray(processedResult)) {
             throw new Error('Invalid tags format');
           }
-        } catch (error) {
+        } catch (_error) {
           // Fallback: split by comma or newline
           processedResult = result
             .replace(/[\[\]"']/g, '')

@@ -14,7 +14,7 @@ interface EditorProps {
   onCreateNote: (note: Note) => void;
 }
 
-export function Editor({ note, onUpdateNote, onCreateNote }: EditorProps) {
+export function Editor({ note, onUpdateNote, onCreateNote: _onCreateNote }: EditorProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [tags, setTags] = useState<string[]>([]);

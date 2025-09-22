@@ -12,7 +12,10 @@
       "Bash(curl:*)",
       "Bash(pkill:*)",
       "Bash(npx next dev:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(npx vercel:*)"
     ],
     "deny": [],
     "ask": []

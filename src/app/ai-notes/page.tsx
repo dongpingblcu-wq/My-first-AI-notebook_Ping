@@ -13,7 +13,7 @@ import { AppLayout } from '@/components/app-layout';
 
 
 export default function AINotesPage() {
-  const { notes, createNote, updateNote, deleteNote, searchTerm, setSearchTerm } = useNotes();
+  const { notes, createNote, updateNote, searchTerm, setSearchTerm } = useNotes();
   const [isCreating, setIsCreating] = useState(false);
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
