@@ -11,7 +11,8 @@
       "Bash(npx tsc:*)",
       "Bash(curl:*)",
       "Bash(pkill:*)",
-      "Bash(npx next dev:*)"
+      "Bash(npx next dev:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
