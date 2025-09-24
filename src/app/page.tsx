@@ -105,50 +105,52 @@ export default function Home() {
           </p>
         </div>
 
-        {/* 功能模块卡片 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center relative z-20">
+        {/* 秀气功能模块卡片 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 justify-items-center relative z-20">
           {modules.map((module) => {
             const IconComponent = module.icon;
             return (
               <div
                 key={module.id}
                 onClick={() => handleModuleClick(module.path)}
-                className="group cursor-pointer transform transition-all duration-500 hover:scale-105 hover:-translate-y-2 hover:shadow-2xl w-full max-w-sm drop-shadow-lg"
+                className="group cursor-pointer transform transition-all duration-300 hover:scale-105 hover:-translate-y-1 w-full max-w-[280px]"
               >
-                <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl overflow-hidden border border-white/20 transition-all duration-300">
-                  {/* 卡片头部 */}
-                  <div className={`${module.bgColor} p-6 relative overflow-hidden`}>
-                    <div className="absolute top-0 right-0 w-32 h-32 transform translate-x-8 -translate-y-8 opacity-10">
-                      <IconComponent size={128} className={module.textColor} />
+                <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl overflow-hidden border border-white/30 transition-all duration-300">
+                  {/* 精简卡片头部 */}
+                  <div className={`${module.bgColor} p-4 relative overflow-hidden`}>
+                    <div className="absolute top-0 right-0 w-16 h-16 transform translate-x-4 -translate-y-4 opacity-15">
+                      <IconComponent size={64} className={module.textColor} />
                     </div>
-                    <div className="relative z-10">
-                      <div className={`inline-flex p-3 rounded-xl bg-white shadow-sm mb-4`}>
-                        <IconComponent size={32} className={module.textColor} />
+                    <div className="relative z-10 flex items-center space-x-3">
+                      <div className={`inline-flex p-2 rounded-lg bg-white shadow-sm`}>
+                        <IconComponent size={20} className={module.textColor} />
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">
-                        {module.title}
-                      </h3>
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        {module.description}
-                      </p>
+                      <div>
+                        <h3 className="text-base font-semibold text-gray-900">
+                          {module.title}
+                        </h3>
+                        <p className="text-gray-600 text-xs leading-snug mt-1">
+                          {module.description}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
-                  {/* 卡片内容 */}
-                  <div className="p-6">
-                    <div className="space-y-3 mb-6">
-                      {module.features.map((feature, index) => (
+                  {/* 精简卡片内容 */}
+                  <div className="p-4">
+                    <div className="space-y-2 mb-3">
+                      {module.features.slice(0, 3).map((feature, index) => (
                         <div key={index} className="flex items-center space-x-2">
-                          <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${module.color}`}></div>
-                          <span className="text-sm text-gray-600">{feature}</span>
+                          <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${module.color}`}></div>
+                          <span className="text-xs text-gray-600">{feature}</span>
                         </div>
                       ))}
                     </div>
-                    
-                    {/* 进入按钮 */}
-                    <div className={`flex items-center justify-between p-3 rounded-xl bg-gradient-to-r ${module.color} text-white group-hover:shadow-lg transition-all duration-300`}>
-                      <span className="font-medium">立即使用</span>
-                      <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform duration-300" />
+
+                    {/* 迷你进入按钮 */}
+                    <div className={`flex items-center justify-between py-2 px-3 rounded-lg bg-gradient-to-r ${module.color} text-white group-hover:shadow-md transition-all duration-300`}>
+                      <span className="text-xs font-medium">使用</span>
+                      <ArrowRight size={12} className="transform group-hover:translate-x-0.5 transition-transform duration-300" />
                     </div>
                   </div>
                 </div>
