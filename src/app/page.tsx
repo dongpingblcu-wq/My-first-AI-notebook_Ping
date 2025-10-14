@@ -1,12 +1,36 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { BookOpen, CheckSquare, MessageCircle, Clock, FolderKanban, ArrowRight } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { BookOpen, CheckSquare, MessageCircle, Clock, FolderKanban, ArrowRight, User, LogIn } from 'lucide-react';
 import { WavyBackground } from '@/components/ui/wavy-background';
 import { AppLayout } from '@/components/app-layout';
+import { EmailAuth } from '@/components/auth/email-auth';
+import { UserInfo } from '@/components/auth/user-info';
+import { supabase } from '@/lib/supabase';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 
 export default function Home() {
   const router = useRouter();
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [showAuth, setShowAuth] = useState(false);
+
+  useEffect(() => {
+    // 获取当前用户
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    getUser();
+
+    // 监听认证状态变化
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const modules = [
     {
@@ -67,6 +91,10 @@ export default function Home() {
   ];
 
   const handleModuleClick = (path: string) => {
+    if (!user) {
+      setShowAuth(true);
+      return;
+    }
     router.push(path);
   };
 
@@ -95,6 +123,33 @@ export default function Home() {
       
       {/* 内容层 */}
       <div className="relative z-10 w-full px-6 py-8">
+        {/* 顶部导航栏 - 用户认证 */}
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex-1"></div>
+          <div className="flex items-center space-x-4">
+            {user ? (
+              <div className="flex items-center space-x-3 bg-white/90 backdrop-blur-sm rounded-lg px-4 py-2">
+                <UserInfo />
+                <button
+                  onClick={() => supabase.auth.signOut()}
+                  className="text-gray-600 hover:text-gray-800 p-1"
+                  title="退出登录"
+                >
+                  <LogIn size={16} className="rotate-180" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowAuth(true)}
+                className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm hover:bg-white rounded-lg px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors"
+              >
+                <User size={16} />
+                <span>登录/注册</span>
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* 页面标题 */}
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold text-white mb-4">
@@ -104,6 +159,21 @@ export default function Home() {
             集成AI笔记、任务管理、智能对话和专注计时，打造您的专属数字工作空间
           </p>
         </div>
+
+        {/* 认证弹窗 */}
+        {showAuth && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="relative">
+              <button
+                onClick={() => setShowAuth(false)}
+                className="absolute -top-2 -right-2 w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center z-10"
+              >
+                ×
+              </button>
+              <EmailAuth />
+            </div>
+          </div>
+        )}
 
         {/* 秀气功能模块卡片 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 justify-items-center relative z-20">
