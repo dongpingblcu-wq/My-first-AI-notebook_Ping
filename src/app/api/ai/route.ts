@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const model = process.env.OPENROUTER_MODEL || 'deepseek/deepseek-chat-v3.1';
+    const model = process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash-image';
     const prompt = prompts[action](text);
     
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
           if (!Array.isArray(processedResult)) {
             throw new Error('Invalid tags format');
           }
-        } catch (_error) {
+        } catch {
           // Fallback: split by comma or newline
           processedResult = result
             .replace(/[\[\]"']/g, '')

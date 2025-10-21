@@ -20,7 +20,31 @@ interface Model {
 }
 
 const MODELS: Model[] = [
-  // 您指定的优先模型
+  // 真实的NanoBanana模型 - Gemini 2.5 Flash Image
+  {
+    id: 'google/gemini-2.5-flash-image',
+    name: 'Gemini 2.5 Flash Image (Nano Banana)',
+    provider: 'Google',
+    description: 'Google的Gemini 2.5 Flash Image模型，支持图像理解，就是您要的NanoBanana',
+    contextLength: 1048576,
+    maxTokens: 8192
+  },
+  {
+    id: 'openai/gpt-4o-mini',
+    name: 'GPT-4o Mini',
+    provider: 'OpenAI',
+    description: 'OpenAI的轻量级模型，性价比高',
+    contextLength: 128000,
+    maxTokens: 16384
+  },
+  {
+    id: 'google/gemma-2-9b-it',
+    name: 'Gemma 2 9B',
+    provider: 'Google',
+    description: 'Google的轻量级开源模型',
+    contextLength: 8192,
+    maxTokens: 4096
+  },
   {
     id: 'deepseek/deepseek-chat-v3.1',
     name: 'DeepSeek Chat V3.1',

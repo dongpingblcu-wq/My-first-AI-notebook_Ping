@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { EmailAuth } from '@/components/auth/email-auth'
 
 export default function AuthPage() {
@@ -18,9 +19,9 @@ export default function AuthPage() {
         <EmailAuth />
 
         <div className="text-center mt-6">
-          <a href="/" className="text-blue-600 hover:text-blue-800 text-sm">
+          <Link href="/" className="text-blue-600 hover:text-blue-800 text-sm">
             返回主页面
-          </a>
+          </Link>
         </div>
       </div>
     </div>

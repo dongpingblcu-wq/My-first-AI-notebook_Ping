@@ -17,15 +17,15 @@ export function EmailAuth() {
 
     try {
       if (isSignUp) {
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
           email,
           password,
         })
 
         if (error) throw error
-        setMessage('注册成功！请检查邮箱验证或直接使用登录')
+        setMessage('注册成功！验证邮件已发送到您的邮箱，请查收并验证后登录。如果未收到邮件，您也可以直接尝试登录。')
       } else {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         })
@@ -38,8 +38,25 @@ export function EmailAuth() {
           window.location.reload()
         }, 1000)
       }
-    } catch (error: any) {
-      setMessage(`错误: ${error.message}`)
+    } catch (error) {
+      let errorMessage = '未知错误'
+
+      if (error instanceof Error) {
+        // 处理 Supabase 特定的错误
+        if (error.message.includes('email_address_invalid')) {
+          errorMessage = '邮箱地址格式不正确，请使用有效的邮箱地址'
+        } else if (error.message.includes('password')) {
+          errorMessage = '密码不符合要求，请确保密码至少6位字符'
+        } else if (error.message.includes('user_already_exists')) {
+          errorMessage = '该邮箱已被注册，请直接登录或找回密码'
+        } else if (error.message.includes('Supabase未配置')) {
+          errorMessage = '认证服务未配置，请联系管理员'
+        } else {
+          errorMessage = error.message
+        }
+      }
+
+      setMessage(`错误: ${errorMessage}`)
     } finally {
       setLoading(false)
     }

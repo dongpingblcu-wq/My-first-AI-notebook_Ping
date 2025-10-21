@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { EmailAuth } from '@/components/auth/email-auth'
 import { UserInfo } from '@/components/auth/user-info'
 import { supabase } from '@/lib/supabase'
@@ -69,9 +70,9 @@ export default function TestAuthPage() {
 
         {/* 返回主页 */}
         <div className="text-center">
-          <a href="/" className="text-blue-600 hover:text-blue-800">
+          <Link href="/" className="text-blue-600 hover:text-blue-800">
             返回主页面
-          </a>
+          </Link>
         </div>
       </div>
     </div>
