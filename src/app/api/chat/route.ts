@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+interface TextContent {
+  type: 'text';
+  text: string;
+}
+
+interface ImageContent {
+  type: 'image_url';
+  image_url: { url: string };
+}
+
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
-  content: string | Array<{
-    type: 'text' | 'image_url';
-    text?: string;
-    image_url?: { url: string };
-  }>;
+  content: string | (TextContent | ImageContent)[];
 }
 
 interface ChatRequest {
@@ -15,11 +21,12 @@ interface ChatRequest {
   max_tokens?: number;
   temperature?: number;
   imageQuality?: 'standard' | 'high' | 'ultra';
+  forceModel?: 'text' | 'image'; // 强制使用特定模型类型
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { messages, model, max_tokens = 4000, temperature = 0.7, imageQuality = 'high' }: ChatRequest = await request.json();
+    const { messages, model, max_tokens = 4000, temperature = 0.7, imageQuality = 'high', forceModel }: ChatRequest = await request.json();
 
     // 针对图片生成模型优化参数
     let optimizedTemperature = temperature;
@@ -67,7 +74,58 @@ export async function POST(request: NextRequest) {
       console.log(`[API Chat] 优化参数 - temperature: ${optimizedTemperature}, max_tokens: ${optimizedMaxTokens}`);
     }
 
-    console.log('[API Chat] 收到请求，模型:', model);
+    // 智能模型选择逻辑
+    let selectedModel = model;
+
+    // 如果强制指定了模型类型，使用对应的模型
+    if (forceModel) {
+      if (forceModel === 'text' && process.env.OPENROUTER_MODEL_TEXT) {
+        selectedModel = process.env.OPENROUTER_MODEL_TEXT;
+        console.log(`[API Chat] 强制使用文本模型: ${selectedModel}`);
+      } else if (forceModel === 'image' && process.env.OPENROUTER_MODEL_IMAGE) {
+        selectedModel = process.env.OPENROUTER_MODEL_IMAGE;
+        console.log(`[API Chat] 强制使用图片模型: ${selectedModel}`);
+      }
+    } else {
+      // 自动检测请求类型并选择合适模型
+      const isImageGeneration = messages.some(msg => {
+        const content = msg.content;
+        if (typeof content === 'string') {
+          const imageGenerationKeywords = ['生成', '创建', '制作', '画', '图', 'image', 'generate', 'create', 'draw'];
+          return imageGenerationKeywords.some(keyword =>
+            content.toLowerCase().includes(keyword.toLowerCase())
+          );
+        } else if (Array.isArray(content)) {
+          // 检查数组内容中是否包含图片生成关键词
+          return content.some(item => {
+            if (item.type === 'text' && item.text) {
+              const imageGenerationKeywords = ['生成', '创建', '制作', '画', '图', 'image', 'generate', 'create', 'draw'];
+              return imageGenerationKeywords.some(keyword =>
+                item.text.toLowerCase().includes(keyword.toLowerCase())
+              );
+            }
+            return false;
+          });
+        }
+        return false;
+      });
+
+      // 检查是否包含图片URL
+      const hasImageUrls = messages.some(msg =>
+        Array.isArray(msg.content) && msg.content.some(item => item.type === 'image_url')
+      );
+
+      if ((isImageGeneration || hasImageUrls) && process.env.OPENROUTER_MODEL_IMAGE) {
+        selectedModel = process.env.OPENROUTER_MODEL_IMAGE;
+        console.log(`[API Chat] 检测到图片相关请求，自动切换到图片模型: ${selectedModel}`);
+      } else if (process.env.OPENROUTER_MODEL_TEXT) {
+        selectedModel = process.env.OPENROUTER_MODEL_TEXT;
+        console.log(`[API Chat] 使用文本模型: ${selectedModel}`);
+      }
+    }
+
+    console.log('[API Chat] 收到请求，原始模型:', model);
+    console.log('[API Chat] 选择模型:', selectedModel);
     console.log('[API Chat] 消息数量:', messages.length);
 
     // 验证基本参数
@@ -98,17 +156,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('Chat API - Using model:', model);
+    console.log('Chat API - Original model:', model);
+    console.log('Chat API - Selected model:', selectedModel);
     console.log('Chat API - Messages count:', messages.length);
     console.log('Chat API - API Key exists:', !!apiKey);
 
     // 检查是否为图片生成请求
     const isImageGeneration = messages.some(msg => {
-      if (typeof msg.content === 'string') {
+      const content = msg.content;
+      if (typeof content === 'string') {
         const imageGenerationKeywords = ['生成', '创建', '制作', '画', '图', 'image', 'generate', 'create', 'draw'];
         return imageGenerationKeywords.some(keyword =>
-          msg.content.toLowerCase().includes(keyword.toLowerCase())
+          content.toLowerCase().includes(keyword.toLowerCase())
         );
+      } else if (Array.isArray(content)) {
+        // 检查数组内容中是否包含图片生成关键词
+        return content.some(item => {
+          if (item.type === 'text' && item.text) {
+            const imageGenerationKeywords = ['生成', '创建', '制作', '画', '图', 'image', 'generate', 'create', 'draw'];
+            return imageGenerationKeywords.some(keyword =>
+              item.text.toLowerCase().includes(keyword.toLowerCase())
+            );
+          }
+          return false;
+        });
       }
       return false;
     });
@@ -124,7 +195,7 @@ export async function POST(request: NextRequest) {
 
         // 构建请求数据
         const requestBody = {
-          model: model,
+          model: selectedModel,
           messages: messages,
           max_tokens: optimizedMaxTokens,
           temperature: optimizedTemperature,

@@ -27,7 +27,8 @@ export function AIChatInterface() {
     isLoading,
     sendMessage,
     clearChat,
-    retryCount
+    retryCount,
+    currentModel
   } = useAIChat(selectedModel);
 
   const scrollToBottom = () => {
@@ -45,8 +46,23 @@ export function AIChatInterface() {
     const message = input.trim();
     setInput('');
 
+    // 智能模型选择逻辑
+    let forceModel: 'text' | 'image' | undefined;
+
+    // 检测是否为图片生成请求
+    const imageGenerationKeywords = ['生成', '创建', '制作', '画', '图', 'image', 'generate', 'create', 'draw'];
+    const isImageGeneration = imageGenerationKeywords.some(keyword =>
+      message.toLowerCase().includes(keyword.toLowerCase())
+    );
+
+    // 如果有图片上传或者是图片生成请求，强制使用图片模型
+    if (selectedImages.length > 0 || isImageGeneration) {
+      forceModel = 'image';
+      console.log(`[Submit] 检测到图片相关请求，强制使用图片模型`);
+    }
+
     // 发送消息，如果有图片则一起发送
-    await sendMessage(message, selectedImages.length > 0 ? selectedImages : undefined, imageQuality);
+    await sendMessage(message, selectedImages.length > 0 ? selectedImages : undefined, imageQuality, forceModel);
 
     // 发送后清除图片
     if (selectedImages.length > 0) {
@@ -179,6 +195,21 @@ export function AIChatInterface() {
             value={selectedModel}
             onChange={setSelectedModel}
           />
+
+          {/* 显示当前实际使用的模型 */}
+          {currentModel && currentModel !== selectedModel && (
+            <div className="flex items-center space-x-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-lg">
+              <span className="text-sm text-blue-700 font-medium">实际使用:</span>
+              <span className="text-sm text-blue-600">
+                {currentModel.includes('gemini-2.5-flash-image') ? 'Gemini 2.5 Flash Image (图片模型)' :
+                 currentModel.includes('deepseek') ? 'DeepSeek Chat (文本模型)' :
+                 currentModel.includes('gpt') ? 'GPT 模型' :
+                 currentModel.includes('claude') ? 'Claude 模型' :
+                 currentModel.includes('gemini') ? 'Gemini 模型' : currentModel}
+              </span>
+            </div>
+          )}
+
           {(selectedModel.includes('gemini-2.5-flash-image') || selectedModel.includes('image')) && (
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-600">图片质量:</span>
@@ -354,7 +385,7 @@ export function AIChatInterface() {
                   </div>
                   <span className="text-sm text-gray-500">AI正在处理中...</span>
                 </div>
-                {retryCount > 0 && (
+                {retryCount && retryCount > 0 && (
                   <div className="text-xs text-orange-600 mt-1">
                     🔄 第 {retryCount} 次重试中...
                   </div>

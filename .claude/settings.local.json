@@ -28,7 +28,10 @@
       "WebFetch(domain:openrouter.ai)",
       "Bash(node:*)",
       "Bash(set \"OPENROUTER_API_KEY=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\")",
-      "Bash(KillShell:*)"
+      "Bash(KillShell:*)",
+      "Bash(vercel login:*)",
+      "Bash(killall:*)",
+      "Bash(vercel --version)"
     ],
     "deny": [],
     "ask": []

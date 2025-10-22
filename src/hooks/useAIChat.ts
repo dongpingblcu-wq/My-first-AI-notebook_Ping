@@ -14,17 +14,19 @@ interface Message {
 interface UseAIChatReturn {
   messages: Message[];
   isLoading: boolean;
-  sendMessage: (content: string, imageUrls?: string[], imageQuality?: 'standard' | 'high' | 'ultra') => Promise<void>;
+  sendMessage: (content: string, imageUrls?: string[], imageQuality?: 'standard' | 'high' | 'ultra', forceModel?: 'text' | 'image') => Promise<void>;
   clearChat: () => void;
   loadHistory: () => void;
   setSaveImagesToHistory: (save: boolean) => void; // 添加控制函数
   retryCount?: number; // 添加重试次数
+  currentModel?: string; // 添加当前实际使用的模型
 }
 
 export function useAIChat(model: string): UseAIChatReturn {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const [currentModel, setCurrentModel] = useState<string>(model); // 跟踪实际使用的模型
 
   const loadHistory = useCallback(() => {
     // 确保只在客户端运行
@@ -82,7 +84,7 @@ export function useAIChat(model: string): UseAIChatReturn {
     }
   }, [model]);
 
-  const sendMessage = useCallback(async (content: string, imageUrls?: string[], imageQuality: 'standard' | 'high' | 'ultra' = 'high') => {
+  const sendMessage = useCallback(async (content: string, imageUrls?: string[], imageQuality: 'standard' | 'high' | 'ultra' = 'high', forceModel?: 'text' | 'image') => {
     setIsLoading(true);
     setRetryCount(0); // 重置重试计数
 
@@ -180,10 +182,25 @@ ${qualityPrompt}
       console.log('Messages count:', newMessages.length);
 
       // 构建消息内容，支持多张图片
+      interface TextContent {
+        type: 'text';
+        text: string;
+      }
+
+      interface ImageContent {
+        type: 'image_url';
+        image_url: {
+          url: string;
+          detail?: string;
+        };
+      }
+
+      type MessageContent = string | (TextContent | ImageContent)[];
+
       const messagesPayload = newMessages.map(msg => {
         if (msg.imageUrls && msg.imageUrls.length > 0) {
           // 构建包含多张图片的内容
-          const contentParts = [
+          const contentParts: (TextContent | ImageContent)[] = [
             {
               type: 'text',
               text: msg.content
@@ -195,7 +212,8 @@ ${qualityPrompt}
             contentParts.push({
               type: 'image_url',
               image_url: {
-                url: url
+                url: url,
+                detail: 'high'
               }
             });
           });
@@ -223,6 +241,7 @@ ${qualityPrompt}
           max_tokens: 4000,
           temperature: 0.7,
           imageQuality: imageQuality, // 添加图片质量参数
+          forceModel: forceModel, // 添加强制模型选择参数
         }),
       });
 
@@ -242,6 +261,12 @@ ${qualityPrompt}
       if (data.retryCount > 0) {
         console.log(`[Send Message] 经过 ${data.retryCount} 次重试后成功`);
         setRetryCount(data.retryCount);
+      }
+
+      // 更新当前使用的模型
+      if (data.model) {
+        setCurrentModel(data.model);
+        console.log(`[Send Message] 实际使用的模型: ${data.model}`);
       }
 
       // 检查是否有AI生成的图片
@@ -320,5 +345,6 @@ ${qualityPrompt}
     loadHistory,
     setSaveImagesToHistory,
     retryCount,
+    currentModel,
   };
 }
