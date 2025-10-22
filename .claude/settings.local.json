@@ -31,7 +31,11 @@
       "Bash(KillShell:*)",
       "Bash(vercel login:*)",
       "Bash(killall:*)",
-      "Bash(vercel --version)"
+      "Bash(vercel --version)",
+      "Bash(vercel --prod)",
+      "Bash(vercel env add:*)",
+      "Bash(vercel secrets:*)",
+      "Bash(npx next build:*)"
     ],
     "deny": [],
     "ask": []

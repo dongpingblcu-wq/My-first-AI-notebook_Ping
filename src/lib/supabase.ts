@@ -57,7 +57,7 @@ const createSafeClient = (url: string, key: string) => {
           })
         })
       })
-    } as any
+    } as Database
   }
 }
 

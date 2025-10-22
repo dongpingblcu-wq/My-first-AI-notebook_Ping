@@ -12,15 +12,6 @@
       "maxDuration": 60
     }
   },
-  "env": {
-    "OPENROUTER_API_KEY": "@openrouter-api-key",
-    "NEXT_PUBLIC_OPENROUTER_API_KEY": "@next-public-openrouter-api-key",
-    "NEXT_PUBLIC_APP_URL": "@next-public-app-url",
-    "OPENROUTER_MODEL": "@openrouter-model",
-    "NEXT_PUBLIC_SUPABASE_URL": "@next-public-supabase-url",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@next-public-supabase-anon-key",
-    "SUPABASE_SERVICE_ROLE_KEY": "@supabase-service-role-key"
-  },
   "build": {
     "env": {
       "NEXT_TELEMETRY_DISABLED": "1"

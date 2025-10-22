@@ -24,7 +24,7 @@ export default function Home() {
     getUser();
 
     // 监听认证状态变化
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: any) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: { user: SupabaseUser | null } | null) => {
       setUser(session?.user ?? null);
     });
 

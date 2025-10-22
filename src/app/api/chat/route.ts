@@ -277,7 +277,7 @@ export async function POST(request: NextRequest) {
         // 尝试从images字段提取
         if (message?.images && Array.isArray(message.images)) {
           console.log(`[API Chat] AI生成了 ${message.images.length} 张图片`);
-          imageUrls = message.images.map((img: any) => {
+          imageUrls = message.images.map((img: { type: string; image_url?: { url: string } }) => {
             if (img.type === 'image_url' && img.image_url?.url) {
               return img.image_url.url;
             }
